@@ -2,7 +2,7 @@ import pygame,sys
 import time,datetime
 import random
 import leaderboards as db
-
+from pygame import mixer 
 
 pygame.init()
 
@@ -180,7 +180,17 @@ def snake(blockSize, snake_list):
         pygame.draw.rect(window, black,[size[0]+5,size[1],blockSize,blockSize],2)
 
 
+def play_game_over_sound():
+    mixer.music.load("gameover.mp3") 
+    mixer.music.play() 
+    mixer.music.set_volume(0.7) 
+    mixer.music.play() 
 
+def egg_eat_sound():
+    mixer.init() 
+    mixer.music.load("egg_break.mp3")  
+    mixer.music.set_volume(0.7) 
+    mixer.music.play() 
 
 def game_over_screen():
     
@@ -285,6 +295,7 @@ def game_play(score):
 
             if lead_x >= window_width or lead_x < 0 or lead_y >= window_height or lead_y < 0:
                 game_over = True
+                play_game_over_sound()
 
         lead_x += change_pixels_of_x
         lead_y += change_pixels_of_y
@@ -304,13 +315,12 @@ def game_play(score):
 
         for eachSegment in snake_list [:-1]:
             if eachSegment == allspriteslist:
+                play_game_over_sound()
                 game_over = True
 
         snake(blockSize, snake_list)
         display_score(score)
         pygame.display.update()
-
-
         if lead_x >= randomAppleX and lead_x <= randomAppleX + AppleThickness:
             if lead_y >= randomAppleY and lead_y <= randomAppleY + AppleThickness:
                 randomAppleX = round(random.randrange(0, window_width-blockSize)/10.0)*10.0
@@ -318,12 +328,11 @@ def game_play(score):
                 snake_length += 1
                 display_score(score)
                 score+=1
-                pygame.display.update()
-            
+                egg_eat_sound()
+                pygame.display.update()      
         clock.tick(FPS)
     pygame.quit()
     quit_game()
-
 score=0
 game_play(score)
 
